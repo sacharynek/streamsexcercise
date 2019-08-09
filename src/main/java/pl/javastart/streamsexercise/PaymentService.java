@@ -48,7 +48,13 @@ class PaymentService {
     }
 
     Set<String> findProductsSoldInCurrentMonth() {
-        throw new RuntimeException("Not implemented");
+        return paymentRepository
+                .findAll()
+                .stream()
+                .filter(a -> dateTimeProvider.zonedDateTimeNow().getMonth().equals( a.getPaymentDate().getMonth()) && dateTimeProvider.zonedDateTimeNow().getYear() ==a.getPaymentDate().getYear())
+                .flatMap(listContainer -> listContainer.getPaymentItems().stream())
+                .map(PaymentItem::getName)
+                .collect(Collectors.toSet());
     }
 
     BigDecimal sumTotalForGivenMonth(YearMonth yearMonth) {
