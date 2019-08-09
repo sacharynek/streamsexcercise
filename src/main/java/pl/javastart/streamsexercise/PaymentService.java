@@ -52,7 +52,13 @@ class PaymentService {
     }
 
     BigDecimal sumTotalForGivenMonth(YearMonth yearMonth) {
-        throw new RuntimeException("Not implemented");
+        return paymentRepository
+                .findAll()
+                .stream()
+                .filter(a -> yearMonth.equals(YearMonth.of(a.getPaymentDate().getYear(), a.getPaymentDate().getMonth())))
+                .flatMap(listContainer -> listContainer.getPaymentItems().stream())
+                .map(PaymentItem::getFinalPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     BigDecimal sumDiscountForGivenMonth(YearMonth yearMonth) {
