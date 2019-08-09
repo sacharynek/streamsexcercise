@@ -1,8 +1,8 @@
 package pl.javastart.streamsexercise;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,11 +18,15 @@ class PaymentService {
     }
 
     List<Payment> findPaymentsSortedByDateDesc() {
-        throw new RuntimeException("Not implemented");
+        return paymentRepository
+                .findAll()
+                .stream()
+                .sorted((a,b) -> (a.getPaymentDate().compareTo(b.getPaymentDate())*-1))
+                .collect(Collectors.toList());
     }
 
     List<Payment> findPaymentsForCurrentMonth() {
-        return  paymentRepository
+        return paymentRepository
                 .findAll()
                 .stream()
                 .filter(a -> dateTimeProvider.zonedDateTimeNow().getYear() == a.getPaymentDate().getYear() && dateTimeProvider.zonedDateTimeNow().getMonth() == a.getPaymentDate().getMonth())
@@ -30,8 +34,6 @@ class PaymentService {
     }
 
     List<Payment> findPaymentsForGivenMonth(YearMonth yearMonth) {
-
-
 
         return paymentRepository
                 .findAll()
@@ -43,11 +45,10 @@ class PaymentService {
 
     List<Payment> findPaymentsForGivenLastDays(int days) {
 
-
         return paymentRepository
                 .findAll()
                 .stream()
-                .filter(a -> !dateTimeProvider.zonedDateTimeNow().toLocalDateTime().minusDays(days).isAfter(a.getPaymentDate().toLocalDateTime())   )
+                .filter(a -> !dateTimeProvider.zonedDateTimeNow().toLocalDateTime().minusDays(days).isAfter(a.getPaymentDate().toLocalDateTime()))
                 .collect(Collectors.toList());
     }
 
@@ -59,7 +60,7 @@ class PaymentService {
         return paymentRepository
                 .findAll()
                 .stream()
-                .filter(a -> dateTimeProvider.zonedDateTimeNow().getMonth().equals( a.getPaymentDate().getMonth()) && dateTimeProvider.zonedDateTimeNow().getYear() ==a.getPaymentDate().getYear())
+                .filter(a -> dateTimeProvider.zonedDateTimeNow().getMonth().equals(a.getPaymentDate().getMonth()) && dateTimeProvider.zonedDateTimeNow().getYear() == a.getPaymentDate().getYear())
                 .flatMap(listContainer -> listContainer.getPaymentItems().stream())
                 .map(PaymentItem::getName)
                 .collect(Collectors.toSet());
