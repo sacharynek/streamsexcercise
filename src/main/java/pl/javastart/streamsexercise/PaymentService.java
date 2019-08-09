@@ -30,7 +30,15 @@ class PaymentService {
     }
 
     List<Payment> findPaymentsForGivenMonth(YearMonth yearMonth) {
-        throw new RuntimeException("Not implemented");
+
+
+
+        return paymentRepository
+                .findAll()
+                .stream()
+                .filter(a -> yearMonth.equals(YearMonth.of(a.getPaymentDate().getYear(), a.getPaymentDate().getMonth())))
+                .collect(Collectors.toList());
+
     }
 
     List<Payment> findPaymentsForGivenLastDays(int days) {
